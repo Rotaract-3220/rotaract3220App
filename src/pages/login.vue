@@ -1,6 +1,12 @@
 <template>
 	<f7-page no-toolbar no-navbar panel-close="left" no-swipeback login-screen>
-		<f7-login-screen-title>One Rotaract</f7-login-screen-title>
+		<f7-navbar large :sliding="false">
+			<f7-nav-left>
+				<f7-link icon-ios="f7:menu" icon-aurora="f7:menu" icon-md="material:menu" panel-open="left"></f7-link>
+			</f7-nav-left>
+			<f7-nav-title sliding>One Rotaract</f7-nav-title>
+			<f7-nav-title-large>One Rotaract</f7-nav-title-large>
+		</f7-navbar>
 		<f7-list form>
 			<f7-list-input
 				label="Username"
@@ -21,14 +27,6 @@
 			<f7-list-button @click="signIn">Sign In</f7-list-button>
 			<f7-block-footer>Rotaract 3220 Sri Lanka and Maldives.<br>&copy; Rotaract Digital Communications Unit</f7-block-footer>
 		</f7-list>
-		<!-- Services Popup -->
-		<div class="popup popup-services">
-			<div class="content-block">
-				<p>Services</p>
-				<p><a href="#" class="close-popup">Close popup</a></p>
-				<p>Lorem ipsum dolor ...</p>
-			</div>
-		</div>
 	</f7-page>
 </template>
 
@@ -37,40 +35,46 @@
 	export default {
 		data() {
 			return {
-				username: 'voxsar@gmail.com',
-				password: 'scoobydoo@123',
+				username: '',
+				password: '',
 			};
 		},
 		methods: {
 			signIn() {
-				var ti = this
-				console.log(ti);
-				LoginRep.post('',
-				{
-					grant_type: "password",
-					client_id: 11,
-					client_secret: "Gpkv1RmOqLtRUoMuHRdqvr8ep5cz2ygTb37Zr05K",
-					username: this.username,
-					password: this.password,
-					scope: "*"
-				}).then(function (t){
+				var ti = this;
+				ti.$f7.preloader.show();
+				var loginCred = {
+					email: this.username,
+					pwd: this.password
+				}
+				var config = { headers: {
+						'Content-Type': 'application/json'}
+				}
+				console.log(loginCred);
+				LoginRep.post('', loginCred,config
+				).then(function (t){
 					console.log(t)
 					var storage = window.localStorage
-					storage.setItem("access_token", t.data.access_token)
-					ti.$f7router.navigate('/dashboard')
+					if(t.data){
+						storage.setItem("user", JSON.stringify(t.data[0]));
+						ti.$bus.$emit('loggedInChange',true);
+						// ti.$emit('loggedInChange',true);
+						ti.$f7router.navigate('/')
+						ti.$f7.preloader.hide();
+					}else{
+						ti.$f7.dialog.alert('Use proper login credentials');
+						ti.$f7.preloader.hide();
+					}
 				}).catch(function(e){
-					ti.$f7.dialog.alert('Use proper login credentialsl');
+					console.log(e);
+					ti.$f7.dialog.alert('Use proper login credentials');
+					ti.$f7.preloader.hide();
+
 				})
 			},
 		},
 		beforeMount() {
-			var ti = this
-			var storage = window.localStorage
-			if(storage.getItem("access_token") === null){
-				ti.$f7router.navigate('/dashboard')
-			}else{
-				ti.$f7router.navigate('/dashboard')
-			}
+
 		}
 	};
 </script>

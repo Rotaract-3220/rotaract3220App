@@ -23,7 +23,9 @@ import VueGoodTablePlugin from 'vue-good-table';
 
 // import the styles
 import 'vue-good-table/dist/vue-good-table.css'
+import EventBus from './EventBus'
 
+Vue.prototype.$bus = EventBus;
 Vue.use(VueGoodTablePlugin);
 Vue.use(VueAxios, axios)
 // Init Framework7-Vue Plugin

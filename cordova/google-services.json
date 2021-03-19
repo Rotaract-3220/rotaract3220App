@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "57045326339",
+    "firebase_url": "https://onerotaract.firebaseio.com",
+    "project_id": "onerotaract",
+    "storage_bucket": "onerotaract.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:57045326339:android:5904bc6f401d997cad8c36",
+        "android_client_info": {
+          "package_name": "org.rotaract3220.one"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "57045326339-3ses173afomkkk7q4r59otghiitj813i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCXrveh49Uf75KaFBtTpFCoTMZ4wctcqZo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "57045326339-3ses173afomkkk7q4r59otghiitj813i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -6,7 +6,10 @@ import MembershipPage from  '../pages/membership.vue';
 import ClubsPage from '../pages/clubs.vue';
 import DiscoPage from '../pages/disco.vue';
 import CalendarPage from '../pages/calendar.vue';
-
+import NotificationPage from '../pages/notification.vue';
+import TimeliePage from '../pages/timeline';
+import PostPage from '../pages/post';
+import ProfilePage from '../pages/profile';
 /*Home Pages*/
 import PersonalPage from '../pages/home/personnal.vue';
 import ClubPage from '../pages/home/club.vue';
@@ -30,7 +33,7 @@ import NotFoundPage from '../pages/404.vue';
 var routes = [
 	{
 		path: '/',
-		component: MainPage,
+		component: TimeliePage,
 		beforeEnter: function (routeTo, routeFrom, resolve, reject) {
 			// Router instance
 			// App instance
@@ -49,6 +52,10 @@ var routes = [
 		component: DashboardPage,
 	},
 	{
+		path: '/login',
+		component: LoginPage,
+	},
+	{
 		path: '/membership',
 		component: MembershipPage,
 	},
@@ -61,8 +68,24 @@ var routes = [
 		component: DiscoPage,
 	},
 	{
+		path: '/profile',
+		component: ProfilePage,
+	},
+	{
+		path: '/post',
+		component: PostPage,
+	},
+	{
 		path: '/calendar',
 		component: CalendarPage,
+	},
+	{
+		path: '/notification',
+		component: NotificationPage,
+	},
+	{
+		path: '/timeline',
+		component: TimeliePage,
 	},
 	{
 		path: 'settings/about/',

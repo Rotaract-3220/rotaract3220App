@@ -1,37 +1,33 @@
 <template>
 	<f7-app :params="f7params" theme-dark>
 
-		<!-- Left panel with cover effect when hidden -->
-<!--		<f7-panel left cover theme-dark :visible-breakpoint="960">-->
-<!--			<f7-view>-->
-<!--				<f7-page>-->
-<!--					<f7-navbar title="Menu"></f7-navbar>-->
+<!--		 Left panel with cover effect when hidden -->
+		<f7-panel left cover theme-dark :visible-breakpoint="960">
+			<f7-view>
+				<f7-page>
+					<f7-navbar title="Menu"></f7-navbar>
 <!--					<f7-block-title>Home</f7-block-title>-->
-<!--					<f7-list>-->
-<!--						<f7-list-item link="/home/personnal/" view=".view-main" panel-close title="Personnal Details"></f7-list-item>-->
-<!--						<f7-list-item link="/home/club/" view=".view-main" panel-close title="Club Details"></f7-list-item>-->
-<!--						<f7-list-item link="/home/membershipcard/" view=".view-main" panel-close title="Membership Card"></f7-list-item>-->
-<!--					</f7-list>-->
-<!--					<f7-block-title>Rotaract Events</f7-block-title>-->
-<!--					<f7-list>-->
-<!--						<f7-list-item link="/events/club/" view=".view-main" panel-close title="Club Projects"></f7-list-item>-->
-<!--						<f7-list-item link="/events/rotaract/" view=".view-main" panel-close title="Rotaract Projects"></f7-list-item>-->
-<!--						<f7-list-item link="/events/district/" view=".view-main" panel-close title="District Initiatives"></f7-list-item>-->
-<!--						<f7-list-item link="/events/cluster/" view=".view-main" panel-close title="Cluster Initiatives"></f7-list-item>-->
-<!--					</f7-list>-->
-<!--					<f7-block-title>Settings</f7-block-title>-->
-<!--					<f7-list>-->
-<!--						<f7-list-item link="/settings/" view=".view-main" panel-close title="Settings"></f7-list-item>-->
-<!--						<f7-list-item link="/about/" view=".view-main" panel-close title="About Rotaract 3220 App"></f7-list-item>-->
-<!--						<f7-list-item link="/privacy/" view=".view-main" panel-close title="Privacy"></f7-list-item>-->
-<!--					</f7-list>-->
-<!--				</f7-page>-->
-<!--			</f7-view>-->
-<!--		</f7-panel>-->
+					<f7-list>
 
+<!--						<f7-list-item v-if="isLoggedIn" view=".view-main" panel-close :title="user.card_name" no-chevron></f7-list-item>-->
+						<f7-list-item link="/" view=".view-main" panel-close title="Home" no-chevron></f7-list-item>
+						<f7-list-item link="/disco" view=".view-main" panel-close title="District Steering Committee" no-chevron></f7-list-item>
+						<f7-list-item link="/membership" view=".view-main" panel-close title="Membership Directory" no-chevron></f7-list-item>
+						<f7-list-item link="/clubs" view=".view-main" panel-close title="Clubs" no-chevron></f7-list-item>
+						<f7-list-item link="/calendar" view=".view-main" panel-close title="Calendar" no-chevron></f7-list-item>
+						<f7-list-item v-if="!isLoggedIn" :key="isLoggedIn" link="/login" view=".view-main" panel-close title="Login" no-chevron></f7-list-item>
+						<f7-list-item v-if="isLoggedIn" link="/profile" view=".view-main" panel-close :title="user.card_name" no-chevron>
+							<i class="f7-icons size-10">person_circle</i>
+						</f7-list-item>
+						<f7-list-item v-if="isLoggedIn" :key="isLoggedIn" @click="logout" link="/" view=".view-main" panel-close title="Logout" no-chevron></f7-list-item>
+						<f7-list-item v-if="isLoggedIn" :key="isLoggedIn" link="/post" view=".view-main" panel-close title="Add Post" no-chevron></f7-list-item>
 
+					</f7-list>
+				</f7-page>
+			</f7-view>
+		</f7-panel>
 		<!-- Your main view, should have "view-main" class -->
-		<f7-view main class="safe-areas" url="/"></f7-view>
+		<f7-view  main class="safe-areas" url="/"></f7-view>
 
 	</f7-app>
 </template>
@@ -42,11 +38,19 @@
 	import Vue from 'vue'
 	import axios from 'axios'
 	import VueAxios from 'vue-axios'
+	import 'framework7-icons';
 
 	export default {
 		data() {
+			var isLoggedIn = false;
+			var usr = window.localStorage.getItem('user');
+			if(usr){
+				isLoggedIn = true;
+			}
 			return {
 				// Framework7 Parameters
+				isLoggedIn : isLoggedIn,
+				user : JSON.parse(usr),
 				f7params: {
 					id: 'org.rotaract3220.one', // App bundle ID
 					name: 'One Rotaract', // App name
@@ -73,6 +77,22 @@
 					},
 				},
 			}
+		},
+		methods : {
+			logout(){
+				var ti = this;
+				window.localStorage.removeItem	('user');
+				this.isLoggedIn = false;
+				console.log('logout');
+				ti.$f7.dialog.alert('Logged out successfully!');
+
+			}
+		},
+		created(){
+			this.$bus.$on('loggedInChange', (e)=>{
+				this.isLoggedIn = e;
+				console.log('event');
+			})
 		},
 		mounted() {
 			this.$f7ready((f7) => {

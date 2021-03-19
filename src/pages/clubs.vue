@@ -1,16 +1,23 @@
 <template>
     <f7-page no-toolbar no-navbar panel-close="left" no-swipeback login-screen>
-        <f7-login-screen-title>One Rotaract</f7-login-screen-title>
-        <div class="card">
-            <div class="card-header">Club Details</div>
-            <div class="card-content">
-                <!-- Card content -->
-                <div class="data-table">
-                    <div>
-                        <vue-good-table
-                                :columns="columns"
-                                :rows="members"
-                                :pagination-options="{
+        <f7-navbar large :sliding="false">
+            <f7-nav-left>
+                <f7-link icon-ios="f7:menu" icon-aurora="f7:menu" icon-md="material:menu" panel-open="left"></f7-link>
+            </f7-nav-left>
+            <f7-nav-title sliding>One Rotaract</f7-nav-title>
+            <f7-nav-title-large>One Rotaract</f7-nav-title-large>
+        </f7-navbar>
+        <div v-if="isSet">
+            <div class="card">
+                <div class="card-header">Club Details</div>
+                <div class="card-content">
+                    <!-- Card content -->
+                    <div class="data-table">
+                        <div>
+                            <vue-good-table
+                                    :columns="columns"
+                                    :rows="members"
+                                    :pagination-options="{
                             enabled: true,
                             mode: 'records',
                             perPage: 10,
@@ -25,23 +32,26 @@
                             pageLabel: 'page', // for 'pages' mode
                             allLabel: 'All',
                           }"
-                                :search-options="{
+                                    :search-options="{
                             enabled: true,
                             skipDiacritics: true,
-                            placeholder: 'Search Members',
+                            placeholder: 'Search Clubs',
                             }"
-                                theme="nocturnal"
-                        />
+                                    theme="nocturnal"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
 
     </f7-page>
 </template>
 
 <script>
     import LoginRep from './../js/LoginRepository'
+    import MembershipRepository from './../js/MembershipRepository'
     export default {
         data() {
             var storage = window.localStorage
@@ -59,8 +69,13 @@
                         label: 'President Contact No',
                         field: 'president.mobile',
                     },
+                    {
+                        label: 'President E-mail Address',
+                        field: 'president.email',
+                    },
                 ],
-                members : JSON.parse(storage.getItem('clubs'))
+                members : null,
+                isSet: false,
             };
         },
         methods: {
@@ -87,12 +102,22 @@
         },
         beforeMount() {
             var ti = this
-            var storage = window.localStorage
-            if(storage.getItem("access_token") === null){
-                ti.$f7router.navigate('/dashboard')
-            }else{
-                ti.$f7router.navigate('/dashboard')
-            }
+            ti.$f7.preloader.show();
+            console.log('clubs');
+            MembershipRepository.get('/clubs').then(function (t) {
+                console.log(t);
+                var storage = window.localStorage
+                ti.members = t.data
+                ti.$f7.preloader.hide();
+                ti.isSet = true;
+
+            }).catch(function (e) {
+                    ti.$f7.dialog.alert(e.message);
+                    ti.$f7.preloader.hide();
+                    // ti.$f7router.navigate('/membership')
+
+                }
+            )
         }
     };
 </script>

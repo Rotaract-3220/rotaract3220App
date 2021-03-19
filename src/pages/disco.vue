@@ -1,16 +1,23 @@
 <template>
     <f7-page no-toolbar no-navbar panel-close="left" no-swipeback login-screen>
-        <f7-login-screen-title>One Rotaract</f7-login-screen-title>
-        <div class="card">
-            <div class="card-header">District Steering Committee</div>
-            <div class="card-content">
-                <!-- Card content -->
-                <div class="data-table">
-                    <div>
-                        <vue-good-table
-                                :columns="columns"
-                                :rows="members"
-                                :pagination-options="{
+        <f7-navbar large :sliding="false">
+            <f7-nav-left>
+                <f7-link icon-ios="f7:menu" icon-aurora="f7:menu" icon-md="material:menu" panel-open="left"></f7-link>
+            </f7-nav-left>
+            <f7-nav-title sliding>One Rotaract</f7-nav-title>
+            <f7-nav-title-large>One Rotaract</f7-nav-title-large>
+        </f7-navbar>
+        <div v-if="isSet" style="margin-top: 15vh">
+            <div class="card">
+                <div class="card-header">District Steering Committee</div>
+                <div class="card-content">
+                    <!-- Card content -->
+                    <div class="data-table">
+                        <div>
+                            <vue-good-table
+                                    :columns="columns"
+                                    :rows="members"
+                                    :pagination-options="{
                             enabled: true,
                             mode: 'records',
                             perPage: 10,
@@ -25,23 +32,32 @@
                             pageLabel: 'page', // for 'pages' mode
                             allLabel: 'All',
                           }"
-                                :search-options="{
+                                    :search-options="{
                             enabled: true,
                             skipDiacritics: true,
-                            placeholder: 'Search Members',
+                            placeholder: 'Search District Steering Committee',
                             }"
-                                theme="nocturnal"
-                        />
+                                    theme="nocturnal"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+<!--        <div v-else class="block block-strong align-items-stretch text-align-center">-->
+<!--            <div class="col-25">-->
+<!--                <div class="preloader" style="width: 44px; height: 44px"></div>-->
+<!--            </div>-->
+<!--        </div>-->
+
 
     </f7-page>
 </template>
 
 <script>
     import LoginRep from './../js/LoginRepository'
+    import MembershipRepository from './../js/MembershipRepository'
+
     export default {
         data() {
             var storage = window.localStorage
@@ -64,39 +80,32 @@
                         field: 'email',
                     },
                 ],
-                members : JSON.parse(storage.getItem('disco'))
+                members : null,
+                isSet : false
             };
         },
         methods: {
-            signIn() {
-                var ti = this
-                console.log(ti);
-                LoginRep.post('',
-                    {
-                        grant_type: "password",
-                        client_id: 11,
-                        client_secret: "Gpkv1RmOqLtRUoMuHRdqvr8ep5cz2ygTb37Zr05K",
-                        username: this.username,
-                        password: this.password,
-                        scope: "*"
-                    }).then(function (t){
-                    console.log(t)
-                    var storage = window.localStorage
-                    storage.setItem("access_token", t.data.access_token)
-                    ti.$f7router.navigate('/dashboard')
-                }).catch(function(e){
-                    ti.$f7.dialog.alert('Use proper login credentialsl');
-                })
-            },
         },
         beforeMount() {
             var ti = this
-            var storage = window.localStorage
-            if(storage.getItem("access_token") === null){
-                ti.$f7router.navigate('/dashboard')
-            }else{
-                ti.$f7router.navigate('/dashboard')
-            }
+            ti.$f7.preloader.show();
+            console.log('membership');
+            MembershipRepository.get('/disco').then(function (t) {
+                console.log(t);
+                var storage = window.localStorage
+                ti.members = t.data;
+                storage.setItem("disco", JSON.stringify(t.data))
+                ti.$f7.preloader.hide();
+                ti.$f7router.navigate('/disco')
+                ti.isSet = true
+
+            }).catch(function (e) {
+                    ti.$f7.dialog.alert(e.message);
+                    ti.$f7.preloader.hide();
+                    // ti.$f7router.navigate('/membership')
+
+                }
+            )
         }
     };
 </script>

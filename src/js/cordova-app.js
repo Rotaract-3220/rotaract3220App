@@ -21,6 +21,8 @@ var cordovaApp = {
     if (f7.device.electron) return;
 
     document.addEventListener('backbutton', function (e) {
+      const currentView = f7.views.current;
+      // console.log(currentView);
       if ($('.actions-modal.modal-in').length) {
         f7.actions.close('.actions-modal.modal-in');
         // e.preventDefault();
@@ -72,18 +74,25 @@ var cordovaApp = {
         return false;
       }
 
-      const currentView = f7.views.current;
-      if (currentView && currentView.router && currentView.router.history.length > 1) {
+
+      if (currentView && currentView.router && currentView.router.history.length > 0) {
+        console.log('back btn');
+        console.log(currentView.name);
+        currentView.router.history.pop();
         currentView.router.back();
-        e.preventDefault();
+        // e.preventDefault();
         return false;
       }
 
+
       if ($('.panel.panel-in').length) {
         f7.panel.close('.panel.panel-in');
-        e.preventDefault();
+        // e.preventDefault();
         return false;
       }
+      e.preventDefault();
+      window.plugins.appMinimize.minimize();
+    //  Back button is not working in main view
     }, false);
   },
   /*
@@ -136,6 +145,36 @@ var cordovaApp = {
       }
     }, true);
   },
+
+  handlePushNotification: function(){
+    var f7 = cordovaApp.f7;
+    document.addEventListener("deviceready", onDeviceReady, false);
+    function onDeviceReady() {
+      console.log('Device Ready');
+
+      // f7router.navigate('/notification');
+    }
+
+    const currentView = f7.views.current;
+    FirebasePlugin.onMessageReceived(data =>{
+      console.dir(data);
+      console.dir(data.body);
+      localStorage.setItem('notification',JSON.stringify(data));
+      let f7router = this.$f7router;
+      currentView.router.navigate('/notification')
+
+    },err => {
+      console.log(err)
+    });
+
+
+
+
+
+  },
+  subscribeToTest: function(){
+
+  },
   init: function (f7) {
     // Save f7 instance
     cordovaApp.f7 = f7;
@@ -148,6 +187,8 @@ var cordovaApp = {
 
     // Handle Keyboard
     cordovaApp.handleKeyboard();
+    // cordovaApp.subscribeToTest();
+    cordovaApp.handlePushNotification();
   },
 };
 
